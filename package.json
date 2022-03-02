@@ -19,7 +19,22 @@
 				"command": "vscode-ably.helloWorld",
 				"title": "Hello World"
 			}
-		]
+		],
+		"configuration": {
+			"title": "Ably",
+			"properties": {
+			  "ably.accountId": {
+				"type": "string",
+				"default": null,
+				"description": "Your Ably Account ID."
+			  },
+			  "ably.controlApiKey": {
+				"type": "string",
+				"default": null,
+				"description": "The Ably Control Key with read & write capabilities for Apps & Keys. "
+			  }
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
