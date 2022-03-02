@@ -39,7 +39,22 @@
         "command": "vscode-ably.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "configuration": {
+			"title": "Ably",
+			"properties": {
+			  "ably.accountId": {
+				"type": "string",
+				"default": null,
+				"description": "Your Ably Account ID."
+			  },
+			  "ably.controlApiKey": {
+				"type": "string",
+				"default": null,
+				"description": "The Ably Control Key with read & write capabilities for Apps & Keys. "
+			  }
+			}
+		}
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -52,23 +67,23 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
-  "devDependencies": {
-    "@types/glob": "^7.2.0",
-    "@types/mocha": "^9.1.0",
-    "@types/node": "14.x",
-    "@types/vscode": "^1.64.0",
-    "@typescript-eslint/eslint-plugin": "^5.12.1",
-    "@typescript-eslint/parser": "^5.12.1",
-    "@vscode/test-electron": "^2.1.2",
-    "eslint": "^8.9.0",
-    "glob": "^7.2.0",
-    "mocha": "^9.2.1",
-    "ts-loader": "^9.2.6",
-    "typescript": "^4.5.5",
-    "webpack": "^5.69.1",
-    "webpack-cli": "^4.9.2"
-  },
   "dependencies": {
     "axios": "^0.26.0"
   }
+	"devDependencies": {
+		"@types/vscode": "^1.64.0",
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.0",
+		"@types/node": "14.x",
+		"@typescript-eslint/eslint-plugin": "^5.12.1",
+		"@typescript-eslint/parser": "^5.12.1",
+		"eslint": "^8.9.0",
+		"glob": "^7.2.0",
+		"mocha": "^9.2.1",
+		"typescript": "^4.5.5",
+		"ts-loader": "^9.2.6",
+		"webpack": "^5.69.1",
+		"webpack-cli": "^4.9.2",
+		"@vscode/test-electron": "^2.1.2"
+	}
 }
