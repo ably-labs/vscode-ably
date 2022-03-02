@@ -10,8 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:ablyAppExplorer",
-    "onCommand:vscode-ably.helloWorld"
+    "onView:ablyAppExplorer"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -36,10 +35,54 @@
     },
     "commands": [
       {
-        "command": "vscode-ably.helloWorld",
-        "title": "Hello World"
+        "command": "ably.copyToClipboard",
+        "title": "Copy to Clipboard",
+		"icon": "$(files)"
+      },
+	  {
+        "command": "ably.revokeKey",
+        "title": "Revoke"
+      },
+	  {
+        "command": "ably.copyAmqpUri",
+        "title": "Copy AMQP URI"
+      },
+	  {
+        "command": "ably.copyStompUri",
+        "title": "Copy Stomp URI"
+      },
+	  {
+        "command": "ably.createApp",
+        "title": "Create App"
       }
     ],
+	"menus": {
+		"view/title": [
+			{
+                "command": "ably.createApp",
+                "when": "view == ablyAppExplorer"
+            }
+		],
+        "view/item/context": [
+            {
+                "command": "ably.copyToClipboard",
+                "when": "view == ablyAppExplorer && viewItem == key",
+				"group": "inline"
+            },
+			{
+                "command": "ably.revokeKey",
+                "when": "view == ablyAppExplorer && viewItem == key"
+            },
+			{
+                "command": "ably.copyAmqpUri",
+                "when": "view == ablyAppExplorer && viewItem == queue"
+            },
+			{
+                "command": "ably.copyStompUri",
+                "when": "view == ablyAppExplorer && viewItem == queue"
+            }
+        ]
+    },
     "configuration": {
 			"title": "Ably",
 			"properties": {

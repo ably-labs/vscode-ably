@@ -2,84 +2,111 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import axios from 'axios';
 
-// TODO: replace with config
-const key = "";
-const accountId = "";
+export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
+    private _onDidChangeTreeData: vscode.EventEmitter<AblyItem | undefined | void> = new vscode.EventEmitter<AblyItem | undefined | void>();
+	readonly onDidChangeTreeData: vscode.Event<AblyItem | undefined | void> = this._onDidChangeTreeData.event;
 
-export class AblyAppProvider implements vscode.TreeDataProvider<AblyApp> {
-    private _onDidChangeTreeData: vscode.EventEmitter<AblyApp | undefined | void> = new vscode.EventEmitter<AblyApp | undefined | void>();
-	readonly onDidChangeTreeData: vscode.Event<AblyApp | undefined | void> = this._onDidChangeTreeData.event;
-
-	constructor(private workspaceRoot: string | undefined) {
+	constructor(private config: vscode.WorkspaceConfiguration) {
 	}
 
 	refresh(): void {
 		this._onDidChangeTreeData.fire();
 	}
 
-	getTreeItem(element: AblyApp): vscode.TreeItem {
+	getTreeItem(element: AblyItem): vscode.TreeItem {
 		return element;
 	}
 
-	async getChildren(element?: AblyApp): Promise<AblyApp[]> {
+	async getChildren(element?: AblyItem): Promise<AblyItem[]> {
+
+        const accountId = this.config.get("accountId") as string;
+        const authKey = this.config.get("controlApiKey") as string;
+
+        // Can't show anything here if the auth key/account ID aren't set
+        if(!accountId || !authKey){
+            return [];
+        }
+
+        const ax = axios.create({
+            baseURL: "https://control.ably.net/v1/",
+            headers: {
+                authorization: `Bearer ${authKey}`
+            }
+        });
 
         // No element gets the parent
         if(!element){
-            const {data: apps} = await axios.get(`https://control.ably.net/v1/accounts/${accountId}/apps`, {
-                headers: {
-                    authorization: "Bearer "+key,
-                }
-            });
-            return apps.map((app: any)=>new AblyApp(app.name, app.id, "app", vscode.TreeItemCollapsibleState.Collapsed));
+            const {data: apps} = await ax.get(`accounts/${accountId}/apps`);
+            return apps.map((app: any)=>new AblyItem(app.name, app.id, "app", vscode.TreeItemCollapsibleState.Collapsed));
         }
 
         if(element.type === "app") {
             return Promise.resolve([
-                new AblyApp("keys", element.internalId, "keyList", vscode.TreeItemCollapsibleState.Collapsed),
-                new AblyApp("queues", element.internalId, "queueList", vscode.TreeItemCollapsibleState.Collapsed),
-                new AblyApp("rules", element.internalId, "ruleList", vscode.TreeItemCollapsibleState.Collapsed),
-                new AblyApp("namespace", element.internalId, "namespaceList", vscode.TreeItemCollapsibleState.Collapsed),
+                new AblyItem("keys", element.internalId, "keyList", vscode.TreeItemCollapsibleState.Collapsed, undefined, "key"),
+                new AblyItem("queues", element.internalId, "queueList", vscode.TreeItemCollapsibleState.Collapsed, undefined, "queue"),
+                new AblyItem("rules", element.internalId, "ruleList", vscode.TreeItemCollapsibleState.Collapsed, undefined, "rule"),
+                new AblyItem("namespaces", element.internalId, "namespaceList", vscode.TreeItemCollapsibleState.Collapsed, undefined, "namespace"),
             ]);
         }
 
+        if(element.type === "keyList"){
+            const {data: keys} = await ax.get(`apps/${element.internalId}/keys`);
+            return keys.map((key: any)=>new AblyItem(key.name, key.id, "key", vscode.TreeItemCollapsibleState.None, key));
+        }
+
         if(element.type === "queueList"){
-            const {data: queues} = await axios.get(`https://control.ably.net/v1/apps/${element.internalId}/queues`, {headers: {authorization: "Bearer "+key}});
-            return queues.map((queue: any)=>new AblyApp(queue.name, queue.id, "queue", vscode.TreeItemCollapsibleState.None));
+            const {data: queues} = await ax.get(`apps/${element.internalId}/queues`);
+            return queues.map((queue: any)=>new AblyItem(queue.name, queue.id, "queue", vscode.TreeItemCollapsibleState.None, queue));
         }
 
         if(element.type === "ruleList"){
-            const {data: rules} = await axios.get(`https://control.ably.net/v1/apps/${element.internalId}/rules`, {headers: {authorization: "Bearer "+key}});
-            return rules.map((rule: any)=>new AblyApp(`${rule.source.channelFilter}`, rule.id, "rule", vscode.TreeItemCollapsibleState.None));
+            const {data: rules} = await ax.get(`apps/${element.internalId}/rules`);
+            return rules.map((rule: any)=>new AblyItem(`${rule.source.channelFilter}`, rule.id, "rule", vscode.TreeItemCollapsibleState.None, rule));
+        }
+
+        if(element.type === "namespaceList"){
+            const {data: namespaces} = await ax.get(`apps/${element.internalId}/namespaces`);
+            return namespaces.map((namespace: any)=>new AblyItem(namespace.id, namespace.id, "namespace", vscode.TreeItemCollapsibleState.None, namespace));
         }
 
         return [];
 	}
 
+    async handleCopy(app: AblyItem){
+        console.log("copy to clipboard", app.data.key);
+        if(app.data.key){
+            vscode.env.clipboard.writeText(app.data.key);
+        }else{
+            console.log("AblyItem has no clipboard context", app.label);
+        }
+    }
+
 }
 
 
-type AblyAppType = "app" | "key" | "queue" | "rule" | "namespace" | "keyList" | "queueList" | "ruleList" | "namespaceList";
+type AblyItemType = "app" | "key" | "queue" | "rule" | "namespace" | "keyList" | "queueList" | "ruleList" | "namespaceList";
 
 
-export class AblyApp extends vscode.TreeItem {
+export class AblyItem extends vscode.TreeItem {
 
-    childCache: AblyApp[] = [];
+    childCache: AblyItem[] = [];
 
     constructor(
 		public readonly label: string,
 		public readonly internalId: string,
-        public readonly type: AblyAppType,
+        public readonly type: AblyItemType,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-		public readonly command?: vscode.Command
+        public readonly data?: any,
+        public readonly icon = type
 	) {
 		super(label, collapsibleState);
 		this.tooltip = this.label;
 	}
 
 	iconPath = {
-		light: path.join(__filename, '..', '..', 'media', 'icon', `${this.type}.svg`),
-		dark: path.join(__filename, '..', '..', 'media', 'icon', `${this.type}.svg`)
+		light: path.join(__filename, '..', '..', 'media', 'icon', 'light', `${this.icon}.svg`),
+		dark: path.join(__filename, '..', '..', 'media', 'icon', 'dark', `${this.icon}.svg`)
 	};
 
-	contextValue = 'app';
+	contextValue = this.type;
 }
