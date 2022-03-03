@@ -51,15 +51,15 @@
         "command": "ably.copyStompUri",
         "title": "Copy Stomp URI"
       },
-      {
-        "command": "ably.createApp",
-        "title": "Create App"
-      }
+			{
+				"command": "vscode-ably.createApp",
+				"title": "Ably: Create App"
+			}
     ],
     "menus": {
       "view/title": [
         {
-          "command": "ably.createApp",
+          "command": "vscode-ably.createApp",
           "when": "view == ablyAppExplorer"
         }
       ],
