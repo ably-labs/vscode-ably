@@ -1,5 +1,5 @@
 {
-  "name": "vscode-ably",
+	"name": "vscode-ably",
 	"displayName": "Ably for VSCode",
 	"description": "Manage Ably apps from VSCode",
 	"version": "0.0.1",
@@ -23,16 +23,16 @@
 		"configuration": {
 			"title": "Ably",
 			"properties": {
-			  "ably.accountId": {
-				"type": "string",
-				"default": null,
-				"description": "Your Ably Account ID."
-			  },
-			  "ably.controlApiKey": {
-				"type": "string",
-				"default": null,
-				"description": "The Ably Control Key with read & write capabilities for Apps & Keys. "
-			  }
+				"ably.accountId": {
+					"type": "string",
+					"default": null,
+					"markdownDescription": "Your [Ably Account ID](https://ably.com/documentation/control-api#account-id)."
+				},
+				"ably.accessToken": {
+					"type": "string",
+					"default": null,
+					"markdownDescription": "Your [Ably access token](https://ably.com/documentation/control-api#creating-access-token). You will need read and write capabilities for all features."
+				}
 			}
 		}
 	},
