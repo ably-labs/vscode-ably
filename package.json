@@ -10,14 +10,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vscode-ably.helloWorld"
+        "onCommand:vscode-ably.createApp"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "vscode-ably.helloWorld",
-				"title": "Hello World"
+				"command": "vscode-ably.createApp",
+				"title": "Ably: Create App"
 			}
 		],
 		"configuration": {
