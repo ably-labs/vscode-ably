@@ -43,7 +43,8 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
         // No element gets the parent
         if(!element){
             const {data: apps} = await this.ax.get(`accounts/${this.accountId}/apps`);
-            return apps.map((app: any)=>new AblyItem(app.name, app.id, "app", vscode.TreeItemCollapsibleState.Collapsed));
+            const sortedApps = apps.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            return sortedApps.map((app: any)=>new AblyItem(app.name, app.id, "app", vscode.TreeItemCollapsibleState.Collapsed));
         }
 
         if(element.type === "app") {
@@ -57,22 +58,26 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
 
         if(element.type === "keyList"){
             const {data: keys} = await this.ax.get(`apps/${element.internalId}/keys`);
-            return keys.map((key: any)=>new AblyItem(key.name, key.id, "key", vscode.TreeItemCollapsibleState.None, key));
+            const sortedKeys = keys.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            return sortedKeys.map((key: any)=>new AblyItem(key.name, key.id, "key", vscode.TreeItemCollapsibleState.None, key));
         }
 
         if(element.type === "queueList"){
             const {data: queues} = await this.ax.get(`apps/${element.internalId}/queues`);
-            return queues.map((queue: any)=>new AblyItem(queue.name, queue.id, "queue", vscode.TreeItemCollapsibleState.None, queue));
+            const sortedQueues = queues.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            return sortedQueues.map((queue: any)=>new AblyItem(queue.name, queue.id, "queue", vscode.TreeItemCollapsibleState.None, queue));
         }
 
         if(element.type === "ruleList"){
             const {data: rules} = await this.ax.get(`apps/${element.internalId}/rules`);
-            return rules.map((rule: any)=>new AblyItem(`${rule.source.channelFilter}`, rule.id, "rule", vscode.TreeItemCollapsibleState.None, rule));
+            const sortedRules = rules.sort((a: any, b: any) => a.source.channelFilter.localeCompare(b.source.channelFilter));
+            return sortedRules.map((rule: any)=>new AblyItem(`${rule.source.channelFilter}`, rule.id, "rule", vscode.TreeItemCollapsibleState.None, rule));
         }
 
         if(element.type === "namespaceList"){
             const {data: namespaces} = await this.ax.get(`apps/${element.internalId}/namespaces`);
-            return namespaces.map((namespace: any)=>new AblyItem(namespace.id, namespace.id, "namespace", vscode.TreeItemCollapsibleState.None, namespace));
+            const sortedNameSpaces = namespaces.sort((a: any, b: any) => a.id.localeCompare(b.id));
+            return sortedNameSpaces.map((namespace: any)=>new AblyItem(namespace.id, namespace.id, "namespace", vscode.TreeItemCollapsibleState.None, namespace));
         }
 
         return [];
