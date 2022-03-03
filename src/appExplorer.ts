@@ -59,7 +59,7 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
         if(element.type === "keyList"){
             const {data: keys} = await this.ax.get(`apps/${element.internalId}/keys`);
             const sortedKeys = keys.sort((a: any, b: any) => a.name.localeCompare(b.name));
-            return sortedKeys.map((key: any)=>new AblyItem(key.name, key.id, "key", vscode.TreeItemCollapsibleState.None, key));
+            return sortedKeys.map((key: any)=>new AblyItem(key.name, key.id, "key", vscode.TreeItemCollapsibleState.Collapsed, key));
         }
 
         if(element.type === "queueList"){
@@ -78,6 +78,14 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
             const {data: namespaces} = await this.ax.get(`apps/${element.internalId}/namespaces`);
             const sortedNameSpaces = namespaces.sort((a: any, b: any) => a.id.localeCompare(b.id));
             return sortedNameSpaces.map((namespace: any)=>new AblyItem(namespace.id, namespace.id, "namespace", vscode.TreeItemCollapsibleState.None, namespace));
+        }
+        
+        if(element.type === "key"){
+            return Object.keys(element.data.capability).map((channel: string)=>new AblyItem(channel, channel, "keyCapChannel", vscode.TreeItemCollapsibleState.Collapsed, element.data.capability[channel], "capability"))
+        }
+
+        if(element.type === "keyCapChannel"){
+            return element.data.map((capability: string)=>new AblyItem(capability, capability, "keyCapability", vscode.TreeItemCollapsibleState.None, null, "key"));
         }
 
         return [];
@@ -114,7 +122,7 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
 }
 
 
-type AblyItemType = "app" | "key" | "queue" | "rule" | "namespace" | "keyList" | "queueList" | "ruleList" | "namespaceList";
+type AblyItemType = "app" | "key" | "queue" | "rule" | "namespace" | "keyList" | "queueList" | "ruleList" | "namespaceList" | "keyCapChannel" | "keyCapability";
 
 
 export class AblyItem extends vscode.TreeItem {
@@ -127,7 +135,7 @@ export class AblyItem extends vscode.TreeItem {
         public readonly type: AblyItemType,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly data?: any,
-        public readonly icon = type
+        public readonly icon: string = type
 	) {
 		super(label, collapsibleState);
 		this.tooltip = this.label;
