@@ -37,67 +37,67 @@
       {
         "command": "ably.copyToClipboard",
         "title": "Copy to Clipboard",
-		"icon": "$(files)"
+        "icon": "$(files)"
       },
-	  {
+      {
         "command": "ably.revokeKey",
         "title": "Revoke"
       },
-	  {
+      {
         "command": "ably.copyAmqpUri",
         "title": "Copy AMQP URI"
       },
-	  {
+      {
         "command": "ably.copyStompUri",
         "title": "Copy Stomp URI"
       },
-	  {
+      {
         "command": "ably.createApp",
         "title": "Create App"
       }
     ],
-	"menus": {
-		"view/title": [
-			{
-                "command": "ably.createApp",
-                "when": "view == ablyAppExplorer"
-            }
-		],
-        "view/item/context": [
-            {
-                "command": "ably.copyToClipboard",
-                "when": "view == ablyAppExplorer && viewItem == key",
-				"group": "inline"
-            },
-			{
-                "command": "ably.revokeKey",
-                "when": "view == ablyAppExplorer && viewItem == key"
-            },
-			{
-                "command": "ably.copyAmqpUri",
-                "when": "view == ablyAppExplorer && viewItem == queue"
-            },
-			{
-                "command": "ably.copyStompUri",
-                "when": "view == ablyAppExplorer && viewItem == queue"
-            }
-        ]
+    "menus": {
+      "view/title": [
+        {
+          "command": "ably.createApp",
+          "when": "view == ablyAppExplorer"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "ably.copyToClipboard",
+          "when": "view == ablyAppExplorer && viewItem == key",
+          "group": "inline"
+        },
+        {
+          "command": "ably.revokeKey",
+          "when": "view == ablyAppExplorer && viewItem == key"
+        },
+        {
+          "command": "ably.copyAmqpUri",
+          "when": "view == ablyAppExplorer && viewItem == queue"
+        },
+        {
+          "command": "ably.copyStompUri",
+          "when": "view == ablyAppExplorer && viewItem == queue"
+        }
+      ]
     },
     "configuration": {
-			"title": "Ably",
-			"properties": {
-			  "ably.accountId": {
-				"type": "string",
-				"default": null,
-				"description": "Your Ably Account ID."
-			  },
-			  "ably.controlApiKey": {
-				"type": "string",
-				"default": null,
-				"description": "The Ably Control Key with read & write capabilities for Apps & Keys. "
-			  }
-			}
-		}
+      "title": "Ably",
+      "properties": {
+        "ably.accountId": {
+          "type": "string",
+          "default": null,
+          "markdownDescription": "Your [Ably Account ID](https://ably.com/documentation/control-api#account-id)."
+        },
+        "ably.accessToken": {
+          "type": "string",
+          "default": null,
+          "markdownDescription": "Your [Ably access token](https://ably.com/documentation/control-api#creating-access-token). You will need read and write capabilities for all features."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -114,19 +114,19 @@
     "axios": "^0.26.0"
   },
   "devDependencies": {
-		"@types/vscode": "^1.64.0",
-		"@types/glob": "^7.2.0",
-		"@types/mocha": "^9.1.0",
-		"@types/node": "14.x",
-		"@typescript-eslint/eslint-plugin": "^5.12.1",
-		"@typescript-eslint/parser": "^5.12.1",
-		"eslint": "^8.9.0",
-		"glob": "^7.2.0",
-		"mocha": "^9.2.1",
-		"typescript": "^4.5.5",
-		"ts-loader": "^9.2.6",
-		"webpack": "^5.69.1",
-		"webpack-cli": "^4.9.2",
-		"@vscode/test-electron": "^2.1.2"
-	}
+    "@types/vscode": "^1.64.0",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "14.x",
+    "@typescript-eslint/eslint-plugin": "^5.12.1",
+    "@typescript-eslint/parser": "^5.12.1",
+    "eslint": "^8.9.0",
+    "glob": "^7.2.0",
+    "mocha": "^9.2.1",
+    "typescript": "^4.5.5",
+    "ts-loader": "^9.2.6",
+    "webpack": "^5.69.1",
+    "webpack-cli": "^4.9.2",
+    "@vscode/test-electron": "^2.1.2"
+  }
 }
