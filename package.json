@@ -1,66 +1,132 @@
 {
-	"name": "vscode-ably",
-	"displayName": "Ably for VSCode",
-	"description": "Manage Ably apps from VSCode",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.64.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-        "onCommand:vscode-ably.createApp"
-	],
-	"main": "./dist/extension.js",
-	"contributes": {
-		"commands": [
+  "name": "vscode-ably",
+  "displayName": "Ably for VSCode",
+  "description": "Manage Ably apps from VSCode",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.64.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:ablyAppExplorer"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ably-app-explorer",
+          "title": "Ably App Explorer",
+          "icon": "media/ably.svg"
+        }
+      ]
+    },
+    "views": {
+      "ably-app-explorer": [
+        {
+          "id": "ablyAppExplorer",
+          "name": "Ably App Explorer",
+          "icon": "media/ably.svg",
+          "contextualTitle": "App Explorer"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "ably.copyToClipboard",
+        "title": "Copy to Clipboard",
+        "icon": "$(files)"
+      },
+      {
+        "command": "ably.revokeKey",
+        "title": "Revoke"
+      },
+      {
+        "command": "ably.copyAmqpUri",
+        "title": "Copy AMQP URI"
+      },
+      {
+        "command": "ably.copyStompUri",
+        "title": "Copy Stomp URI"
+      },
 			{
 				"command": "vscode-ably.createApp",
 				"title": "Ably: Create App"
 			}
-		],
-		"configuration": {
-			"title": "Ably",
-			"properties": {
-				"ably.accountId": {
-					"type": "string",
-					"default": null,
-					"markdownDescription": "Your [Ably Account ID](https://ably.com/documentation/control-api#account-id)."
-				},
-				"ably.accessToken": {
-					"type": "string",
-					"default": null,
-					"markdownDescription": "Your [Ably access token](https://ably.com/documentation/control-api#creating-access-token). You will need read and write capabilities for all features."
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run package",
-		"compile": "webpack",
-		"watch": "webpack --watch",
-		"package": "webpack --mode production --devtool hidden-source-map",
-		"compile-tests": "tsc -p . --outDir out",
-		"watch-tests": "tsc -p . -w --outDir out",
-		"pretest": "npm run compile-tests && npm run compile && npm run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.64.0",
-		"@types/glob": "^7.2.0",
-		"@types/mocha": "^9.1.0",
-		"@types/node": "14.x",
-		"@typescript-eslint/eslint-plugin": "^5.12.1",
-		"@typescript-eslint/parser": "^5.12.1",
-		"eslint": "^8.9.0",
-		"glob": "^7.2.0",
-		"mocha": "^9.2.1",
-		"typescript": "^4.5.5",
-		"ts-loader": "^9.2.6",
-		"webpack": "^5.69.1",
-		"webpack-cli": "^4.9.2",
-		"@vscode/test-electron": "^2.1.2"
-	}
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "vscode-ably.createApp",
+          "when": "view == ablyAppExplorer"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "ably.copyToClipboard",
+          "when": "view == ablyAppExplorer && viewItem == key",
+          "group": "inline"
+        },
+        {
+          "command": "ably.revokeKey",
+          "when": "view == ablyAppExplorer && viewItem == key"
+        },
+        {
+          "command": "ably.copyAmqpUri",
+          "when": "view == ablyAppExplorer && viewItem == queue"
+        },
+        {
+          "command": "ably.copyStompUri",
+          "when": "view == ablyAppExplorer && viewItem == queue"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Ably",
+      "properties": {
+        "ably.accountId": {
+          "type": "string",
+          "default": null,
+          "markdownDescription": "Your [Ably Account ID](https://ably.com/documentation/control-api#account-id)."
+        },
+        "ably.accessToken": {
+          "type": "string",
+          "default": null,
+          "markdownDescription": "Your [Ably access token](https://ably.com/documentation/control-api#creating-access-token). You will need read and write capabilities for all features."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "dependencies": {
+    "axios": "^0.26.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.64.0",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "14.x",
+    "@typescript-eslint/eslint-plugin": "^5.12.1",
+    "@typescript-eslint/parser": "^5.12.1",
+    "eslint": "^8.9.0",
+    "glob": "^7.2.0",
+    "mocha": "^9.2.1",
+    "typescript": "^4.5.5",
+    "ts-loader": "^9.2.6",
+    "webpack": "^5.69.1",
+    "webpack-cli": "^4.9.2",
+    "@vscode/test-electron": "^2.1.2"
+  }
 }
