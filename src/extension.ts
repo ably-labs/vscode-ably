@@ -12,6 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const ablyAppProvider = new AblyAppProvider(config);
 	vscode.window.registerTreeDataProvider('ablyAppExplorer', ablyAppProvider);
 	vscode.commands.registerCommand("ably.copyToClipboard", ablyAppProvider.handleCopy);
+	vscode.commands.registerCommand("ably.revokeKey", ablyAppProvider.handleRevokeKey);
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
