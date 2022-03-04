@@ -4,22 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QuickPickItem, window, Disposable, CancellationToken, QuickInputButton, QuickInput, ExtensionContext, QuickInputButtons, Uri } from 'vscode';
+import { AblyControlApi, CreateAppContext } from '../AblyControlApi';
 
 /**
  * A multi-step input using window.createQuickPick() and window.createInputBox().
  * 
  * This first part uses the helper class `MultiStepInput` that wraps the API for the multi-step case.
  */
-export async function createAblyApp(context: ExtensionContext) {
+export async function createAblyApp(context: ExtensionContext, controlApi: AblyControlApi) {
 
 	class MyButton implements QuickInputButton {
 		constructor(public iconPath: { light: Uri; dark: Uri; }, public tooltip: string) { }
 	}
-
-	const createAblyAppButton = new MyButton({
-		dark: Uri.file(context.asAbsolutePath('resources/dark/add.svg')),
-		light: Uri.file(context.asAbsolutePath('resources/light/add.svg')),
-	}, 'Create Ably App');
 
 	const appStates: QuickPickItem[] = ['enabled', 'disabled']
 		.map(label => ({ label }));
@@ -29,8 +25,8 @@ export async function createAblyApp(context: ExtensionContext) {
 		step: number;
 		totalSteps: number;
 		appName: string;
-		appState: QuickPickItem | string;
-		useTLS: string;
+		appState: string;
+		tlsOnly: string;
 	}
 
 
@@ -64,24 +60,23 @@ export async function createAblyApp(context: ExtensionContext) {
 			placeholder: 'Pick the initial app state',
 			items: appStates,
 			activeItem: typeof state.appState !== 'string' ? state.appState : undefined,
-			buttons: [createAblyAppButton],
 			shouldResume: shouldResume
 		});
 		if (pick instanceof MyButton) {
 			return (input: MultiStepInput) => inputTLS(input, state);
 		}
-		state.appState = pick;
+		state.appState = pick.label;
 		return (input: MultiStepInput) => inputTLS(input, state);
 	}
 
 	async function inputTLS(input: MultiStepInput, state: Partial<State>) {
 		// TODO: Remember current value when navigating back.
-		state.useTLS = await input.showInputBox({
+		state.tlsOnly = await input.showInputBox({
 			title,
 			step: 3,
 			totalSteps: 3,
-			value: String(state.useTLS?.valueOf()) || 'true',
-			prompt: 'Use TLS',
+			value: 'true',
+			prompt: 'Use TLS Only',
 			validate: validateNameIsUnique,
 			shouldResume: shouldResume
 		});
@@ -102,8 +97,15 @@ export async function createAblyApp(context: ExtensionContext) {
 
 	const state = await collectInputs();
 	window.showInformationMessage(`Creating Ably App '${state.appName}'`);
+	const createAppContext: CreateAppContext = {
+		appName: state.appName,
+		appState: state.appState,
+		tlsOnly: Boolean(state.tlsOnly),
+		apnsUseSandboxEndpoint: false,
+	};
+	await controlApi.createApp(createAppContext);
+	window.showInformationMessage(`Created Ably App '${state.appName}'`);
 }
-
 
 // -------------------------------------------------------
 // Helper code that wraps the API for the multi-step case.

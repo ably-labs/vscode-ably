@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { AblyAppProvider } from './appExplorer';
 import { createAblyApp } from './command/CreateApp';
+import { AblyControlApi } from './AblyControlApi';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -11,6 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration("ably");
 
 	const ablyAppProvider = new AblyAppProvider(config);
+	const ablyControlApi = new AblyControlApi(config);
 	vscode.window.registerTreeDataProvider('ablyAppExplorer', ablyAppProvider);
 	vscode.commands.registerCommand("ably.copyToClipboard", ablyAppProvider.handleCopy);
 	vscode.commands.registerCommand("ably.revokeKey", ablyAppProvider.handleRevokeKey);
@@ -22,15 +24,15 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('vscode-ably.createApp', () => {
-		const options: { [key: string]: (context: vscode.ExtensionContext) => Promise<void> } = {
+	let disposable = vscode.commands.registerCommand('ably.createApp', () => {
+		const options: { [key: string]: (context: vscode.ExtensionContext, controlApi: AblyControlApi) => Promise<void> } = {
 			createAblyApp
 		};
 		const quickPick = vscode.window.createQuickPick();
 		quickPick.items = Object.keys(options).map(label => ({ label }));
 		quickPick.onDidChangeSelection(selection => {
 			if (selection[0]) {
-				options[selection[0].label](context)
+				options[selection[0].label](context, ablyControlApi)
 					.catch(console.error);
 			}
 		});
