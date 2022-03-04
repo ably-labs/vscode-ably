@@ -94,20 +94,18 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
     // Handles the copy event for all copy to clipboard functions
     async handleCopy(item: AblyItem){
         let data;
-        let success = false;
         switch(item.contextValue){
             case "key":
                 data = item.data.key;
-                success = true;
                 break;
             default:
-                data = `Clipboard command implemented incorrectly for ${item.contextValue}`;
-                break;
+                console.warn(`Clipboard command implemented incorrectly for ${item.contextValue}`);
+                return;
         }
-        if (success) {
-            vscode.env.clipboard.writeText(data);
-            vscode.window.showInformationMessage(`${item.label} ${item.contextValue} copied to clipboard.`);
-        }
+    
+        vscode.env.clipboard.writeText(data);
+        vscode.window.showInformationMessage(`${item.label} ${item.contextValue} copied to clipboard.`);
+        
     }
 
 
