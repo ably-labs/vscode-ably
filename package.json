@@ -3,6 +3,7 @@
   "displayName": "Ably for VSCode",
   "description": "Manage Ably apps from VSCode",
   "version": "0.0.1",
+  "publisher": "Ably",
   "engines": {
     "vscode": "^1.64.0"
   },
@@ -51,10 +52,10 @@
         "command": "ably.copyStompUri",
         "title": "Copy Stomp URI"
       },
-			{
-				"command": "vscode-ably.createApp",
-				"title": "Ably: Create App"
-			}
+      {
+        "command": "vscode-ably.createApp",
+        "title": "Ably: Create App"
+      }
     ],
     "menus": {
       "view/title": [
