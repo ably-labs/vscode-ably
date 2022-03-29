@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
 import axios, { Axios } from 'axios';
+import { AblyItem } from './AblyItem';
+import { version } from 'os';
 
 export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<AblyItem | undefined | void> = new vscode.EventEmitter<AblyItem | undefined | void>();
@@ -71,10 +72,10 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
         if(element.type === "queue"){
             const messagesItem = new AblyItem("Messages", element.internalId, "Messages", "messagesList", vscode.TreeItemCollapsibleState.Collapsed, element.data.messages, "mail");
             const statsItem = new AblyItem("Stats", element.internalId, "Stats", "statsList", vscode.TreeItemCollapsibleState.Collapsed, element.data.stats, "pulse");
-            const regionItem = new AblyItem(`Region: ${element.data.region} `, element.internalId, element.data.region, "singleItem", vscode.TreeItemCollapsibleState.None, null, "globe");
-            const stateItem = new AblyItem(`State: ${element.data.state} `, element.internalId, element.data.state, "singleItem", vscode.TreeItemCollapsibleState.None, null, this.getStatusIcon(element.data.state));
-            const ttlItem = new AblyItem(`TTL: ${element.data.ttl} `, element.internalId, element.data.ttl, "singleItem", vscode.TreeItemCollapsibleState.None, null, "watch");
-            const maxLengthItem = new AblyItem(`Max length: ${element.data.maxLength} `, element.internalId, element.data.maxLength, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-both");
+            const regionItem = new AblyItem(`Region: ${element.data.region}`, element.internalId, element.data.region, "singleItem", vscode.TreeItemCollapsibleState.None, null, "globe");
+            const stateItem = new AblyItem(`State: ${element.data.state}`, element.internalId, element.data.state, "singleItem", vscode.TreeItemCollapsibleState.None, null, this.getStatusIcon(element.data.state));
+            const ttlItem = new AblyItem(`TTL: ${element.data.ttl}`, element.internalId, element.data.ttl, "singleItem", vscode.TreeItemCollapsibleState.None, null, "watch");
+            const maxLengthItem = new AblyItem(`Max length: ${element.data.maxLength}`, element.internalId, element.data.maxLength, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-both");
             return [messagesItem, statsItem, regionItem, stateItem, ttlItem, maxLengthItem];
         }
 
@@ -92,11 +93,48 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
             return [publishRateItem, deliveryRateItem, acknowledgementRateItem];
         }
 
-
         if(element.type === "ruleList"){
             const {data: rules} = await this.ax.get(`apps/${element.internalId}/rules`);
-            const sortedRules = rules.sort((a: any, b: any) => a.source.channelFilter.localeCompare(b.source.channelFilter));
-            return sortedRules.map((rule: any) => new AblyItem(`${rule.source.channelFilter}`, rule.id, rule.source.channelFilter, "rule", vscode.TreeItemCollapsibleState.None, rule));
+            const sortedRules = rules.sort((a: any, b: any) => a.ruleType.localeCompare(b.ruleType));
+            return sortedRules.map((rule: any) => new AblyItem(`Type: ${rule.ruleType}`, rule.id, `Type: ${rule.ruleType} | ID: ${rule.id}`, "rule", vscode.TreeItemCollapsibleState.Collapsed, rule, "symbol-event"));
+        }
+
+        if(element.type === "rule"){
+            const stateItem = new AblyItem(`Status: ${element.data.status}`, element.internalId, element.data.state, "singleItem", vscode.TreeItemCollapsibleState.None, null, this.getStatusIcon(element.data.status));
+            const versionItem = new AblyItem(`Version: ${element.data.version}`, element.internalId, element.data.version, "singleItem", vscode.TreeItemCollapsibleState.None, null, "dash");
+            const requestModeItem = new AblyItem(`Request mode: ${element.data.requestMode}`, element.internalId, element.data.requestMode, "singleItem", vscode.TreeItemCollapsibleState.None, null, "dash");
+            const sourceItem = new AblyItem("Source", element.internalId, "Source", "ruleSource", vscode.TreeItemCollapsibleState.Collapsed, element.data.source, "arrow-left");
+            const targetItem = new AblyItem("Target", element.internalId, "Target", "ruleTarget", vscode.TreeItemCollapsibleState.Collapsed, element.data.target, "arrow-right");
+            const dateCreated = new Date(element.data.created).toUTCString();
+            const createdItem = new AblyItem(`Created: ${dateCreated} ` , dateCreated, dateCreated, "singleItem", vscode.TreeItemCollapsibleState.None, null, "calendar");
+            const dateModified = new Date(element.data.modified).toUTCString();
+            const modifiedItem = new AblyItem(`Modified: ${dateModified} ` , dateModified, dateModified, "singleItem", vscode.TreeItemCollapsibleState.None, null, "calendar");
+            return [stateItem, versionItem, requestModeItem, sourceItem, targetItem, createdItem, modifiedItem];
+        }
+
+        if(element.type === "ruleSource"){
+            const typeItem = new AblyItem(`Type: ${element.data.type}`, element.internalId, element.data.type, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-left");
+            const channelFilterItem = new AblyItem(`Channel filter: ${element.data.channelFilter}`, element.internalId, element.data.channelFilter, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-left");
+            return [typeItem, channelFilterItem];
+        }
+
+        if(element.type === "ruleTarget"){
+            const urlItem = new AblyItem(`URL: ${element.data.url ?? "-"}`, element.internalId, element.data.url ?? "-", "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right");
+            const formatItem = new AblyItem(`Format: ${element.data.format}`, element.internalId, element.data.format, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right");
+            const envelopedItem = new AblyItem(`Enveloped: ${element.data.enveloped}`, element.internalId, element.data.enveloped, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right");
+            const signingKeyIdItem = new AblyItem(`Signing Key Id: ${element.data.signingKeyId ?? "-"} `, element.internalId, element.data.signingKeyId, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right");
+            let headersItem;
+            if (element.data.headers) {
+                headersItem = new AblyItem(`Headers: ${element.data.headers.length} `, element.internalId, element.data.headers.length, "headerList", vscode.TreeItemCollapsibleState.Collapsed, element.data.headers, "arrow-right");
+            }
+            else {
+                headersItem = new AblyItem("Headers: 0", element.internalId, "Headers", "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right");
+            }
+            return [urlItem, formatItem, headersItem, envelopedItem, signingKeyIdItem];
+        }
+
+        if(element.type === "headerList"){
+            return element.data.map((header: any) => new AblyItem(`${header.name}: ${header.value}`, element.internalId, `${header.name}: ${header.value}`, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right"));
         }
 
         if(element.type === "key"){
@@ -165,29 +203,4 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
 }
 
 
-type AblyItemType = "app" | "key" | "queue" | "rule" | "namespace" | "keyList" | "queueList" | "ruleList" | "messagesList"| "namespaceList" | "singleItem" | "statsList" | "keyCapChannel" | "keyCapability";
-
-
-export class AblyItem extends vscode.TreeItem {
-
-    childCache: AblyItem[] = [];
-
-    constructor(
-		public readonly label: string,
-		public readonly internalId: string,
-        public readonly tooltip: string,
-        public readonly type: AblyItemType,
-		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-        public readonly data?: any,
-        public readonly icon: string = type
-	) {
-		super(label, collapsibleState);
-	}
-
-	iconPath = {
-		light: path.join(__filename, '..', '..', 'media', 'icon', 'light', `${this.icon}.svg`),
-		dark: path.join(__filename, '..', '..', 'media', 'icon', 'dark', `${this.icon}.svg`)
-	};
-
-	contextValue = this.type;
-}
+export type AblyItemType = "app" | "key" | "queue" | "rule" | "namespace" | "keyList" | "queueList" | "ruleList" | "ruleSource" | "ruleTarget" | "headerList" | "messagesList"| "namespaceList" | "singleItem" | "statsList" | "keyCapChannel" | "keyCapability";
