@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import axios, { Axios } from 'axios';
 import { AblyItem } from './AblyItem';
+import { AblyControlApi } from './AblyControlApi';
 import { version } from 'os';
 
 export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
@@ -9,12 +10,14 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
 
     accountId: string;
     authKey: string;
+    controlApi: AblyControlApi;
 
     ax: Axios;
 
-	constructor(private config: vscode.WorkspaceConfiguration) {
+	constructor(private config: vscode.WorkspaceConfiguration, controlApi: AblyControlApi) {
         this.accountId = this.config.get("accountId") as string;
         this.authKey = this.config.get("controlApiKey") as string;
+        this.controlApi = controlApi;
 
         this.ax = axios.create({
             baseURL: "https://control.ably.net/v1/",
@@ -26,7 +29,7 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
 	}
 
 	refresh(): void {
-		this._onDidChangeTreeData.fire();
+		this. _onDidChangeTreeData.fire();
 	}
 
 	getTreeItem(element: AblyItem): vscode.TreeItem {
@@ -42,7 +45,7 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
 
         // No element gets the parent
         if(!element){
-            const {data: apps} = await this.ax.get(`accounts/${this.accountId}/apps`);
+            const apps = await this.controlApi.getApps();
             const sortedApps = apps.sort((a: any, b: any) => a.name.localeCompare(b.name));
             return sortedApps.map((app: any) => new AblyItem(app.name, app.id, `App ID: ${app.id} | status: ${app.status}`, "app", vscode.TreeItemCollapsibleState.Collapsed, app, this.getStatusIcon(app.status)));
         }
@@ -58,13 +61,13 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
         }
 
         if(element.type === "keyList"){
-            const {data: keys} = await this.ax.get(`apps/${element.internalId}/keys`);
+            const keys = await this.controlApi.getKeys(element.internalId);
             const sortedKeys = keys.sort((a: any, b: any) => a.name.localeCompare(b.name));
             return sortedKeys.map((key: any) => new AblyItem(key.name, key.id, `Key: ${key.key}`, "key", vscode.TreeItemCollapsibleState.Collapsed, key));
         }
 
         if(element.type === "queueList"){
-            const {data: queues} = await this.ax.get(`apps/${element.internalId}/queues`);
+            const queues = await this.controlApi.getQueues(element.internalId);
             const sortedQueues = queues.sort((a: any, b: any) => a.name.localeCompare(b.name));
             return sortedQueues.map((queue: any) => new AblyItem(queue.name, queue.id, queue.name, "queue", vscode.TreeItemCollapsibleState.Collapsed, queue, "mail"));
         }
@@ -94,7 +97,7 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
         }
 
         if(element.type === "ruleList"){
-            const {data: rules} = await this.ax.get(`apps/${element.internalId}/rules`);
+            const rules = await this.controlApi.getRules(element.internalId);
             const sortedRules = rules.sort((a: any, b: any) => a.ruleType.localeCompare(b.ruleType));
             return sortedRules.map((rule: any) => new AblyItem(`Type: ${rule.ruleType}`, rule.id, `Type: ${rule.ruleType} | ID: ${rule.id}`, "rule", vscode.TreeItemCollapsibleState.Collapsed, rule, "symbol-event"));
         }

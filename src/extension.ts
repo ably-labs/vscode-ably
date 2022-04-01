@@ -11,15 +11,13 @@ export function activate(context: vscode.ExtensionContext) {
 	// TODO: check config properties and throw an error if they're not yet set
 	const config = vscode.workspace.getConfiguration("ably");
 
-	const ablyAppProvider = new AblyAppProvider(config);
 	const ablyControlApi = new AblyControlApi(config);
+	const ablyAppProvider = new AblyAppProvider(config, ablyControlApi);
 	vscode.window.registerTreeDataProvider('ablyAppExplorer', ablyAppProvider);
 	vscode.commands.registerCommand("ably.copyToClipboard", ablyAppProvider.handleCopy);
+	vscode.commands.registerCommand("ably.refresh", ablyAppProvider.refresh);
 	vscode.commands.registerCommand("ably.revokeKey", ablyAppProvider.handleRevokeKey);
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-ably" is now active!');
   
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
