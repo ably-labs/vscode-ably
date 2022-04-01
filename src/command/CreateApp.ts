@@ -20,7 +20,10 @@ export async function createAblyApp(context: ExtensionContext, controlApi: AblyC
 	const appStates: QuickPickItem[] = ['enabled', 'disabled']
 		.map(label => ({ label }));
 
-		interface State {
+	const tlsOnlyStates: QuickPickItem[] = ['true', 'false']
+		.map(label => ({ label }));
+
+	interface State {
 		title: string;
 		step: number;
 		totalSteps: number;
@@ -71,15 +74,16 @@ export async function createAblyApp(context: ExtensionContext, controlApi: AblyC
 
 	async function inputTLS(input: MultiStepInput, state: Partial<State>) {
 		// TODO: Remember current value when navigating back.
-		state.tlsOnly = await input.showInputBox({
+		const tlsOnly = await input.showQuickPick({
 			title,
 			step: 3,
 			totalSteps: 3,
-			value: 'true',
-			prompt: 'Use TLS Only',
-			validate: validateNameIsUnique,
+			placeholder: 'Use TLS Only',
+			items: tlsOnlyStates,
+			activeItem: typeof state.tlsOnly !== 'string' ? state.tlsOnly : undefined,
 			shouldResume: shouldResume
 		});
+		state.tlsOnly = tlsOnly.label;
 	}
 
 	function shouldResume() {
