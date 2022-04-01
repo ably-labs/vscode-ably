@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
-import axios, { Axios } from 'axios';
 import { AblyItem } from './AblyItem';
 import { AblyControlApi } from './AblyControlApi';
-import { version } from 'os';
 
 export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<AblyItem | undefined | void> = new vscode.EventEmitter<AblyItem | undefined | void>();
@@ -12,20 +10,10 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
     authKey: string;
     controlApi: AblyControlApi;
 
-    ax: Axios;
-
 	constructor(private config: vscode.WorkspaceConfiguration, controlApi: AblyControlApi) {
         this.accountId = this.config.get("accountId") as string;
         this.authKey = this.config.get("controlApiKey") as string;
         this.controlApi = controlApi;
-
-        this.ax = axios.create({
-            baseURL: "https://control.ably.net/v1/",
-            headers: {
-                authorization: `Bearer ${this.authKey}`
-            }
-        });
-
 	}
 
 	refresh(): void {
@@ -199,10 +187,9 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
             return;
         }
 
-        let result = await this.ax.post(`/apps/${keyItem.data.appId}/${keyItem.data.id}/revoke`);
+        let result = await this.controlApi.revokeKey(keyItem.data.appId, keyItem.data.id);
         vscode.window.showInformationMessage("Key was successfully revoked");
     }
-
 }
 
 

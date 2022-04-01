@@ -50,4 +50,8 @@ export class AblyControlApi {
     async getRules(appId: string): Promise<any> {
         return (await this.ax.get(`apps/${appId}/rules`)).data;
     }
+
+    async revokeKey(appId: string, keyId: string): Promise<any> {
+        return await this.ax.post(`/apps/${appId}/${keyId}/revoke`);
+    }
 }
