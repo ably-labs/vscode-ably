@@ -6,24 +6,17 @@ trigger:
     include:
     - v*
 
-strategy:
-  matrix:
-    linux:
-      imageName: 'ubuntu-latest'
-    mac:
-      imageName: 'macos-latest'
-    windows:
-      imageName: 'windows-latest'
-
 pool:
-  vmImage: $(imageName)
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: NodeTool@0
   inputs:
     versionSpec: '16.x'
   displayName: 'Install Node.js'
-- bash: npm run compile
+- bash: |
+    npm run compile
   displayName: Compile
-- bash: npm run package
+- bash: |
+    npm run package
   displayName: Package
