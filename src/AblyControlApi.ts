@@ -13,15 +13,18 @@ export class AblyControlApi {
     accountId: string;
     authKey: string;
     ax: Axios;
+    version: string;
 
-    constructor(private config: vscode.WorkspaceConfiguration) {
+    constructor(private config: vscode.WorkspaceConfiguration, version: string) {
         this.accountId = this.config.get("accountId") as string;
         this.authKey = this.config.get("controlApiKey") as string;
+        this.version = version;
 
         this.ax = axios.create({
             baseURL: "https://control.ably.net/v1/",
             headers: {
-                authorization: `Bearer ${this.authKey}`
+                'authorization': `Bearer ${this.authKey}`,
+                'Ably-Agent': `ably-vscode/${this.version}}`
             }
         });
     }
