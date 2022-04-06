@@ -81,7 +81,7 @@ export async function createAblyApp(context: ExtensionContext, controlApi: AblyC
 	const createAppContext: CreateAppContext = {
 		appName: state.appName,
 		appState: 'enabled',
-		tlsOnly: Boolean(state.tlsOnly),
+		tlsOnly: state.tlsOnly === 'true',
 		apnsUseSandboxEndpoint: false,
 	};
 	await controlApi.createApp(createAppContext);
