@@ -1,16 +1,19 @@
 import * as vscode from 'vscode';
 import { AblyItem } from './AblyItem';
 import { AblyControlApi } from './AblyControlApi';
+import { TelemetryApi, EventName } from './TelemetryApi';
 
 export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<AblyItem | undefined | void> = new vscode.EventEmitter<AblyItem | undefined | void>();
 	readonly onDidChangeTreeData: vscode.Event<AblyItem | undefined | void> = this._onDidChangeTreeData.event;
 
+    telemetry: TelemetryApi;
     accountId: string;
     authKey: string;
     controlApi: AblyControlApi;
 
-	constructor(private config: vscode.WorkspaceConfiguration, controlApi: AblyControlApi) {
+	constructor(private config: vscode.WorkspaceConfiguration, controlApi: AblyControlApi, telemetry: TelemetryApi) {
+        this.telemetry = telemetry;
         this.accountId = this.config.get("accountId") as string;
         this.authKey = this.config.get("controlApiKey") as string;
         this.controlApi = controlApi;
@@ -32,13 +35,14 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
         }
 
         // No element gets the parent
-        if(!element){
+        if(!element) {
             const apps = await this.controlApi.getApps();
             const sortedApps = apps.sort((a: any, b: any) => a.name.localeCompare(b.name));
             return sortedApps.map((app: any) => new AblyItem(app.name, app.id, `App ID: ${app.id} | status: ${app.status}`, "app", vscode.TreeItemCollapsibleState.Collapsed, app, this.getStatusIcon(app.status)));
         }
 
         if(element.type === "app") {
+            await this.telemetry.postEvent(EventName.AppExpanded);
             return Promise.resolve([
                 new AblyItem(`Status: ${element.data.status}`, element.internalId, element.data.status, "singleItem", vscode.TreeItemCollapsibleState.None, undefined, this.getStatusIcon(element.data.status)),
                 new AblyItem(`TLS only: ${element.data.tlsOnly}`, element.internalId, element.data.tlsOnly, "singleItem", vscode.TreeItemCollapsibleState.None, undefined, "shield"),
@@ -49,12 +53,14 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
         }
 
         if(element.type === "keyList"){
+            await this.telemetry.postEvent(EventName.KeysExpanded);
             const keys = await this.controlApi.getKeys(element.internalId);
             const sortedKeys = keys.sort((a: any, b: any) => a.name.localeCompare(b.name));
             return sortedKeys.map((key: any) => new AblyItem(key.name, key.id, `Key: ${key.key}`, "key", vscode.TreeItemCollapsibleState.Collapsed, key));
         }
 
         if(element.type === "queueList"){
+            await this.telemetry.postEvent(EventName.QueuesExpanded);
             const queues = await this.controlApi.getQueues(element.internalId);
             const sortedQueues = queues.sort((a: any, b: any) => a.name.localeCompare(b.name));
             return sortedQueues.map((queue: any) => new AblyItem(queue.name, queue.id, queue.name, "queue", vscode.TreeItemCollapsibleState.Collapsed, queue, "mail"));
@@ -84,13 +90,14 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
             return [publishRateItem, deliveryRateItem, acknowledgementRateItem];
         }
 
-        if(element.type === "ruleList"){
+        if(element.type === "ruleList") {
+            await this.telemetry.postEvent(EventName.IntegrationRulesExpanded);
             const rules = await this.controlApi.getRules(element.internalId);
             const sortedRules = rules.sort((a: any, b: any) => a.ruleType.localeCompare(b.ruleType));
             return sortedRules.map((rule: any) => new AblyItem(`Type: ${rule.ruleType}`, rule.id, `Type: ${rule.ruleType} | ID: ${rule.id}`, "rule", vscode.TreeItemCollapsibleState.Collapsed, rule, "symbol-event"));
         }
 
-        if(element.type === "rule"){
+        if(element.type === "rule") {
             const stateItem = new AblyItem(`Status: ${element.data.status}`, element.internalId, element.data.state, "singleItem", vscode.TreeItemCollapsibleState.None, null, this.getStatusIcon(element.data.status));
             const versionItem = new AblyItem(`Version: ${element.data.version}`, element.internalId, element.data.version, "singleItem", vscode.TreeItemCollapsibleState.None, null, "dash");
             const requestModeItem = new AblyItem(`Request mode: ${element.data.requestMode}`, element.internalId, element.data.requestMode, "singleItem", vscode.TreeItemCollapsibleState.None, null, "dash");
@@ -103,13 +110,13 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
             return [stateItem, versionItem, requestModeItem, sourceItem, targetItem, createdItem, modifiedItem];
         }
 
-        if(element.type === "ruleSource"){
+        if(element.type === "ruleSource") {
             const typeItem = new AblyItem(`Type: ${element.data.type}`, element.internalId, element.data.type, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-left");
             const channelFilterItem = new AblyItem(`Channel filter: ${element.data.channelFilter}`, element.internalId, element.data.channelFilter, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-left");
             return [typeItem, channelFilterItem];
         }
 
-        if(element.type === "ruleTarget"){
+        if(element.type === "ruleTarget") {
             const urlItem = new AblyItem(`URL: ${element.data.url ?? "-"}`, element.internalId, element.data.url ?? "-", "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right");
             const formatItem = new AblyItem(`Format: ${element.data.format}`, element.internalId, element.data.format, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right");
             const envelopedItem = new AblyItem(`Enveloped: ${element.data.enveloped}`, element.internalId, element.data.enveloped, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right");
@@ -124,11 +131,11 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
             return [urlItem, formatItem, headersItem, envelopedItem, signingKeyIdItem];
         }
 
-        if(element.type === "headerList"){
+        if(element.type === "headerList") {
             return element.data.map((header: any) => new AblyItem(`${header.name}: ${header.value}`, element.internalId, `${header.name}: ${header.value}`, "singleItem", vscode.TreeItemCollapsibleState.None, null, "arrow-right"));
         }
 
-        if(element.type === "key"){
+        if(element.type === "key") {
             const dateCreated = new Date(element.data.created).toUTCString();
             const createdItem = new AblyItem(`Created: ${dateCreated} ` , dateCreated, dateCreated, "singleItem", vscode.TreeItemCollapsibleState.None, null, "calendar");
             const dateModified = new Date(element.data.modified).toUTCString();
@@ -138,7 +145,7 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
             return capabilities.concat(resourceRestriction, createdItem, modifiedItem);
         }
 
-        if(element.type === "keyCapChannel"){
+        if(element.type === "keyCapChannel") {
             return element.data.map((capability: string) => new AblyItem(capability, capability, capability, "keyCapability", vscode.TreeItemCollapsibleState.None, null, "check"));
         }
 
@@ -164,6 +171,7 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
 
     // Handles the copy event for all copy to clipboard functions
     async handleCopy(item: AblyItem){
+        await this?.telemetry.postEvent(EventName.KeyCopied);
         let data;
         switch(item.contextValue){
             case "key":
@@ -173,15 +181,14 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
                 console.warn(`Clipboard command implemented incorrectly for ${item.contextValue}`);
                 return;
         }
-    
+
         vscode.env.clipboard.writeText(data);
         vscode.window.showInformationMessage(`${item.label} ${item.contextValue} copied to clipboard.`);
-        
     }
-
 
     // Handles the key revocation command
     async handleRevokeKey(keyItem: AblyItem){
+        await this?.telemetry.postEvent(EventName.KeyRevoked);
         const answer = await vscode.window.showInformationMessage(`Are you sure you want to revoke the key '${keyItem.label}'?`, "Yes", "No");
         if(answer !== "Yes"){
             return;

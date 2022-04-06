@@ -5,20 +5,14 @@
 
 import { QuickPickItem, window, Disposable, CancellationToken, QuickInputButton, QuickInput, ExtensionContext, QuickInputButtons, Uri } from 'vscode';
 import { AblyControlApi, CreateAppContext } from '../AblyControlApi';
+import { TelemetryApi, EventName} from '../TelemetryApi';
 
 /**
  * A multi-step input using window.createQuickPick() and window.createInputBox().
  * 
  * This first part uses the helper class `MultiStepInput` that wraps the API for the multi-step case.
  */
-export async function createAblyApp(context: ExtensionContext, controlApi: AblyControlApi) {
-
-	class MyButton implements QuickInputButton {
-		constructor(public iconPath: { light: Uri; dark: Uri; }, public tooltip: string) { }
-	}
-
-	const appStates: QuickPickItem[] = ['enabled', 'disabled']
-		.map(label => ({ label }));
+export async function createAblyApp(context: ExtensionContext, controlApi: AblyControlApi, telemetry: TelemetryApi) {
 
 	const tlsOnlyStates: QuickPickItem[] = ['true', 'false']
 		.map(label => ({ label }));
@@ -28,7 +22,6 @@ export async function createAblyApp(context: ExtensionContext, controlApi: AblyC
 		step: number;
 		totalSteps: number;
 		appName: string;
-		appState: string;
 		tlsOnly: string;
 	}
 
@@ -46,29 +39,12 @@ export async function createAblyApp(context: ExtensionContext, controlApi: AblyC
 		state.appName = await input.showInputBox({
 			title,
 			step: 1,
-			totalSteps: 3,
+			totalSteps: 2,
 			value: state.appName || '',
 			prompt: 'Choose a unique name for the Ably App',
 			validate: validateNameIsUnique,
 			shouldResume: shouldResume
 		});
-		return (input: MultiStepInput) => pickAppState(input, state);
-	}
-
-	async function pickAppState(input: MultiStepInput, state: Partial<State>) {
-		const pick = await input.showQuickPick({
-			title,
-			step: 2,
-			totalSteps: 3,
-			placeholder: 'Pick the initial app state',
-			items: appStates,
-			activeItem: typeof state.appState !== 'string' ? state.appState : undefined,
-			shouldResume: shouldResume
-		});
-		if (pick instanceof MyButton) {
-			return (input: MultiStepInput) => inputTLS(input, state);
-		}
-		state.appState = pick.label;
 		return (input: MultiStepInput) => inputTLS(input, state);
 	}
 
@@ -76,8 +52,8 @@ export async function createAblyApp(context: ExtensionContext, controlApi: AblyC
 		// TODO: Remember current value when navigating back.
 		const tlsOnly = await input.showQuickPick({
 			title,
-			step: 3,
-			totalSteps: 3,
+			step: 2,
+			totalSteps: 2,
 			placeholder: 'Use TLS Only',
 			items: tlsOnlyStates,
 			activeItem: typeof state.tlsOnly !== 'string' ? state.tlsOnly : undefined,
@@ -99,15 +75,17 @@ export async function createAblyApp(context: ExtensionContext, controlApi: AblyC
 		return name === 'vscode' ? 'Name not unique' : undefined;
 	}
 
+	await telemetry.postEvent(EventName.AppCreationInvoked);
 	const state = await collectInputs();
 	window.showInformationMessage(`Creating Ably App '${state.appName}'`);
 	const createAppContext: CreateAppContext = {
 		appName: state.appName,
-		appState: state.appState,
+		appState: 'enabled',
 		tlsOnly: state.tlsOnly === 'true',
 		apnsUseSandboxEndpoint: false,
 	};
 	await controlApi.createApp(createAppContext);
+	await telemetry.postEvent(EventName.AppCreationCompleted);
 	window.showInformationMessage(`Created Ably App '${state.appName}'`);
 }
 
