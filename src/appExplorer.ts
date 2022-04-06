@@ -19,7 +19,8 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
         this.controlApi = controlApi;
 	}
 
-	refresh(): void {
+	async refresh(): Promise<void> {
+        await this.telemetry.postEvent(EventName.RefreshInvoked);
 		this. _onDidChangeTreeData.fire();
 	}
 
@@ -171,7 +172,7 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
 
     // Handles the copy event for all copy to clipboard functions
     async handleCopy(item: AblyItem){
-        await this?.telemetry.postEvent(EventName.KeyCopied);
+        await this.telemetry.postEvent(EventName.KeyCopied);
         let data;
         switch(item.contextValue){
             case "key":

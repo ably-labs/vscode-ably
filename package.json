@@ -4,12 +4,24 @@
   "description": "Manage Ably apps from VSCode",
   "version": "0.0.1",
   "publisher": "Ably",
+  "icon": "media/ably-logo-stacked.png",
   "engines": {
     "vscode": "^1.64.0"
   },
+  "homepage": "https://github.com/ably-labs/vscode-ably/blob/main/README.md",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "keywords": [
+    "Ably",
+    "Control API",
+    "Realtime"
+    ],
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ably-labs/vscode-ably"
+  },
   "activationEvents": [
     "onView:ablyAppExplorer"
   ],
@@ -20,7 +32,7 @@
         {
           "id": "ably-app-explorer",
           "title": "Ably App Explorer",
-          "icon": "media/ably.svg"
+          "icon": "media/ably.png"
         }
       ]
     },
@@ -29,7 +41,7 @@
         {
           "id": "ablyAppExplorer",
           "name": "Ably App Explorer",
-          "icon": "media/ably.svg",
+          "icon": "media/ably.png",
           "contextualTitle": "App Explorer"
         }
       ]

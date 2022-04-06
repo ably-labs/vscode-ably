@@ -10,6 +10,7 @@ export enum EventName {
     KeyRevoked = "KeyRevoked",
     AppCreationInvoked = "AppCreationInvoked",
     AppCreationCompleted = "AppCreationCompleted",
+    RefreshInvoked = "RefreshInvoked",
 }
 
 export class TelemetryApi {
