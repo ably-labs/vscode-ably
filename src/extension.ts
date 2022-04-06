@@ -16,7 +16,8 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand("ably.refresh", ablyAppProvider.refresh);
 	let disposable = vscode.commands.registerCommand('ably.createApp', () => {
 		createAblyApp(context, ablyControlApi, telemetryProvider)
-			.catch(console.error);
+			.catch(console.error)
+			.then(() => { ablyAppProvider.refresh(); });
 	});
 
 	context.subscriptions.push(disposable);
