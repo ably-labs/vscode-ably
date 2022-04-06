@@ -36,7 +36,6 @@ export class TelemetryApi {
             'event': eventName,
             'properties': {
                 'distinct_id': this.source,
-                'source': 'vscode',
                 'version': this.version
             },
         });
