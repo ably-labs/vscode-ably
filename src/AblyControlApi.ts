@@ -35,4 +35,23 @@ export class AblyControlApi {
         });
     }
 
+    async getApps(): Promise<any> {
+        return (await this.ax.get(`accounts/${this.accountId}/apps`)).data;
+    }
+
+    async getKeys(appId: string): Promise<any> {
+        return (await this.ax.get(`apps/${appId}/keys`)).data;
+    }
+
+    async getQueues(appId: string): Promise<any> {
+        return (await this.ax.get(`apps/${appId}/queues`)).data;
+    }
+
+    async getRules(appId: string): Promise<any> {
+        return (await this.ax.get(`apps/${appId}/rules`)).data;
+    }
+
+    async revokeKey(appId: string, keyId: string): Promise<any> {
+        return await this.ax.post(`/apps/${appId}/${keyId}/revoke`);
+    }
 }

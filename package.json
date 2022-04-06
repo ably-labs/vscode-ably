@@ -41,26 +41,29 @@
         "icon": "$(files)"
       },
       {
+        "command": "ably.refresh",
+        "title": "Refresh",
+        "category": "Ably"
+      },
+      {
         "command": "ably.revokeKey",
-        "title": "Revoke"
-      },
-      {
-        "command": "ably.copyAmqpUri",
-        "title": "Copy AMQP URI"
-      },
-      {
-        "command": "ably.copyStompUri",
-        "title": "Copy Stomp URI"
+        "title": "Revoke",
+        "category": "Ably"
+
       },
       {
         "command": "ably.createApp",
-        "title": "Ably: Create App"
+        "title": "Create App",
+        "category": "Ably"
       }
     ],
     "menus": {
       "view/title": [
         {
           "command": "ably.createApp"
+        },
+        {
+          "command": "ably.refresh"
         }
       ],
       "view/item/context": [
@@ -72,14 +75,6 @@
         {
           "command": "ably.revokeKey",
           "when": "view == ablyAppExplorer && viewItem == key"
-        },
-        {
-          "command": "ably.copyAmqpUri",
-          "when": "view == ablyAppExplorer && viewItem == queue"
-        },
-        {
-          "command": "ably.copyStompUri",
-          "when": "view == ablyAppExplorer && viewItem == queue"
         }
       ]
     },
