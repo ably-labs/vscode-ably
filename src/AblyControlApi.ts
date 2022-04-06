@@ -24,7 +24,7 @@ export class AblyControlApi {
             baseURL: "https://control.ably.net/v1/",
             headers: {
                 'authorization': `Bearer ${this.authKey}`,
-                'Ably-Agent': `ably-vscode/${this.version}}`
+                'Ably-Agent': `ably-vscode/${this.version}`
             }
         });
     }
