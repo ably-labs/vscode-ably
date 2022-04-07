@@ -7,7 +7,7 @@
   "publisher": "Ably",
   "icon": "media/ably-logo-stacked.png",
   "engines": {
-    "vscode": "^1.64.0"
+    "vscode": "^1.66.0"
   },
   "homepage": "https://github.com/ably-labs/vscode-ably/blob/main/README.md",
   "license": "SEE LICENSE IN LICENSE.md",
