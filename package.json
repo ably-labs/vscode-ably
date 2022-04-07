@@ -4,7 +4,7 @@
   "description": "Manage Ably apps from VSCode",
   "preview": true,
   "version": "0.0.1",
-  "publisher": "Ably",
+  "publisher": "ably-labs",
   "icon": "media/ably-logo-stacked.png",
   "engines": {
     "vscode": "^1.66.0"
