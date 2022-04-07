@@ -56,4 +56,4 @@ Want to help contributing to this project? Have a look at our [contributing guid
 - [Ably.com](https://ably.com)
 
 ---
-![Ably logo](/media/images/ably-color.svg)
+![Ably logo](https://static.ably.dev/badge-black.png?ably-vscode)
