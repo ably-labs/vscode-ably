@@ -2,26 +2,28 @@
 
 ![The Ably Apps Explorer](media/images/vscode-ably-applist.gif)
 
-Use the Ably for VS Code extension to manage your Ably apps directly in VS Code.
+Use the *Ably for VS Code* extension to manage your Ably apps directly in VS Code.
 
 The extension enables you to:
 
-* List all apps in your Ably account
-  * List the API keys, queues, rules and namespaces for each app
-  * View API key capabilities and copy API keys to your clipboard
-* Create an app
+* List all apps in your Ably account.
+  * View API keys, queues and integration rules for each app.
+  * Copy API keys to your clipboard.
+* Create an Ably app.
 
 ## Prerequisites
 
-The only prerequisite is an [Ably account](https://ably.com/sign-up).
+The only prerequisite is an [Ably account](https://ably.com/sign-up) which is free to sign-up.
 
-## Settings
+## Installation
 
-Enter your Ably [account ID](https://ably.com/documentation/control-api#ids) and [access token](https://ably.com/documentation/control-api#authentication) in VS Code **Settings** to get started.
+After installing this extension, you need to provide your Ably [account ID](https://ably.com/documentation/control-api#ids) and Control API [access token](https://ably.com/documentation/control-api#authentication) in VS Code **Settings** to get started.
 
 ![Image of Ably settings](media/images/vscode-ably-settings.gif)
 
-## List apps
+## Features
+
+### View Ably apps & details
 
 Click on the Ably icon in the **Activity Bar** to view the apps in your Ably account. Apps will be listed in alphabetical order.
 
@@ -29,21 +31,22 @@ Expand an app to view the API keys, queues, rules and namespaces associated with
 
 ![Image of an Ably app expanded](media/images/vscode-ably-applist.gif)
 
-Expand the **keys** for an app to view its API keys. Expanding an API key displays the [capabilities](https://ably.com/documentation/core-features/authentication#capabilities-explained) associated with the key.
+Use the *copy to clipboard* icon to copy an API key to the clipboard.
 
-![Image of API keys and capabilities](media/images/vscode-ably-keys.gif)
-
-Use the copy to clipboard image to copy an API key.
-
-## Create an app
+### Create an Ably app
 
 1. Open the command palette (**CMD+SHIFT+P**) and choose `Ably: Create App`.
 2. Enter a name for the app when prompted.
-3. Select `enabled` for the app state.
-4. Select whether to enforce TLS for connections or not.
-5. A new app will be created and appear within your Ably dashboard and in the app list within VS Code.
+3. Select whether to enforce TLS for connections or not.
+4. A new app will be created and appears in the list once the view has been automatically refreshed.
 
 ![Creation of an Ably App](media/images/vscode-ably-appcreate.gif)
+
+## Issues & Features
+
+If you find an issue 🪲 or have a feature request 🚀 please [file them here](https://github.com/ably-labs/vscode-ably/issues/new/choose).
+
+Note that this extension is still in preview.
 
 ## Contributing
 
