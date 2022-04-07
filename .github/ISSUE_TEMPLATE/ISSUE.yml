@@ -1,0 +1,41 @@
+name: Issue
+description: Create an issue
+title: "Issue: <TITLE>"
+labels: ["issue 🪲"]
+
+body:
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: 📝 Current behavior
+      description: Provide a clear and concise description of the issue.
+      placeholder: The current behavior is...
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 📝 Expected behavior
+      description: What would be the expected behavior?
+      placeholder: The expected behavior would be...
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: ⚙️ Context
+      description: Can you provide more information on your OS, extension version, etc.?
+      placeholder: OS Type & version, Extension version...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: ⚙️ Steps to reproduce
+      description: Can you provide steps to reproduce this issue?
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting this issue! If you're interested in contributing to this project yourself, please read our [Contributing Guidelines](https://github.com/ably-labs/vscode-ably/blob/main/CONTRIBUTING.md)! 💪

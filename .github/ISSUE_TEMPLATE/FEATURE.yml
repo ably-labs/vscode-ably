@@ -1,0 +1,17 @@
+name: Feature
+description: Request a new feature
+title: "Feature: <TITLE>"
+labels: ["feature 🚀"]
+
+body:
+  - type: textarea
+    id: feature
+    attributes:
+      label: 📝 Feature description
+      description: Provide a clear and concise description of the feature and why it would be beneficial to this extension.
+    validations:
+      required: true  
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting this feature! If you're interested in contributing to this project yourself, please read our [Contributing Guidelines](https://github.com/ably-labs/vscode-ably/blob/main/CONTRIBUTING.md)! 💪
