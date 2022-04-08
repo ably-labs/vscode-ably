@@ -4,11 +4,21 @@ import { createAblyApp } from './command/CreateApp';
 import { AblyControlApi } from './AblyControlApi';
 import { TelemetryApi, EventName } from './TelemetryApi';
 import { AblyItem } from './AblyItem';
+import { randomUUID } from 'crypto';
 
 export function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration("ably");
+	const accountId = config.get("accountId") as string;
+    const authKey = config.get("controlApiKey") as string;
+	if(!accountId || !authKey){
+		vscode.window.showErrorMessage("Please update the Extensions > Ably settings with your Ably Account ID and Control API access token before using this.");
+		vscode.commands.executeCommand("workbench.action.openGlobalSettings");
+		return;
+	}
+	
 	const extensionVersion = context.extension.packageJSON.version;
-	const telemetryProvider = new TelemetryApi(extensionVersion);
+	const sessionId = randomUUID();
+	const telemetryProvider = new TelemetryApi(extensionVersion, sessionId);
 	telemetryProvider.postEvent(EventName.Activated);
 	const ablyControlApi = new AblyControlApi(config, extensionVersion);
 	const ablyAppProvider = new AblyAppProvider(config, ablyControlApi, telemetryProvider);
