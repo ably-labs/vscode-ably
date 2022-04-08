@@ -3,7 +3,7 @@
   "displayName": "Ably for VSCode",
   "description": "Manage Ably apps from VSCode",
   "preview": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "ably-labs",
   "icon": "media/ably-logo-stacked.png",
   "engines": {
@@ -24,7 +24,8 @@
     "url": "https://github.com/ably-labs/vscode-ably"
   },
   "activationEvents": [
-    "onView:ablyAppExplorer"
+    "onView:ablyAppExplorer",
+    "onCommand:ably.createApp"
   ],
   "main": "./dist/extension.js",
   "contributes": {
