@@ -32,6 +32,7 @@ export class AblyAppProvider implements vscode.TreeDataProvider<AblyItem> {
         // Can't show anything here if the auth key/account ID aren't set
         if(!this.accountId || !this.authKey){
             vscode.window.showErrorMessage("Please set your Ably Account ID and Control API Key before using this.");
+            vscode.commands.executeCommand("workbench.action.openGlobalSettings");
             return [];
         }
 

@@ -3,7 +3,7 @@
   "displayName": "Ably for VSCode",
   "description": "Manage Ably apps from VSCode",
   "preview": true,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "ably-labs",
   "icon": "media/ably-logo-stacked.png",
   "engines": {
@@ -68,10 +68,12 @@
     "menus": {
       "view/title": [
         {
-          "command": "ably.createApp"
+          "command": "ably.createApp",
+          "when": "view == ablyAppExplorer"
         },
         {
-          "command": "ably.refresh"
+          "command": "ably.refresh",
+          "when": "view == ablyAppExplorer"
         }
       ],
       "view/item/context": [
