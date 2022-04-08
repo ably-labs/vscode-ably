@@ -68,10 +68,12 @@
     "menus": {
       "view/title": [
         {
-          "command": "ably.createApp"
+          "command": "ably.createApp",
+          "when": "view == ablyAppExplorer"
         },
         {
-          "command": "ably.refresh"
+          "command": "ably.refresh",
+          "when": "view == ablyAppExplorer"
         }
       ],
       "view/item/context": [
