@@ -17,9 +17,19 @@ The only prerequisite is an [Ably account](https://ably.com/sign-up) which is fr
 
 ## Installation
 
-After installing this extension, you need to provide your Ably [account ID](https://ably.com/documentation/control-api#ids) and Control API [access token](https://ably.com/documentation/control-api#authentication) in VS Code **Settings** to get started.
+After installing this extension, you need to provide your Ably [account ID](https://ably.com/documentation/control-api#ids) and Control API [access token](https://ably.com/documentation/control-api#authentication) in VS Code **Settings** to get started. 
+
+- Admin access to the Ably account is required to create a Control API access token.
+- The Control API access token requires the following permissions:
+   - read:app
+   - write:app
+   - read:key
+   - read:rule
+   - read:queue
 
 ![Image of Ably settings](media/images/vscode-ably-settings.gif)
+
+> *In case the extension does not work after providing the AccountID and Control API access token, please restart VSCode.*
 
 ## Features
 
