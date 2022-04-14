@@ -10,6 +10,7 @@ on:
 permissions:
     contents: read
     pull-requests: write
+    issues: write
 
 jobs:
     link-checker:
@@ -22,7 +23,16 @@ jobs:
               id: lychee
               uses: lycheeverse/lychee-action@v1.4.1
               with:
-                fail: true
-                args: --verbose --no-progress --exclude-mail --exclude-loopback **/*.md
+                args: --verbose --no-progress --max-concurrency 2 --exclude-mail --exclude-loopback './**/*.md'
+                output: ./lychee/out.md
+              env:
+                GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+            - name: Create issue when fail
+              uses: peter-evans/create-issue-from-file@v3
+              if: (!github.event.pull_request) && ${{ steps.lychee.outputs.exit_code }} != 0
+              with:
+                title: Link Checker Report
+                content-filepath: ./lychee/out.md
+                labels: report 📄, automated issue 🤖
               env:
                 GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
