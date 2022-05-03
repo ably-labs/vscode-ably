@@ -3,7 +3,7 @@
   "displayName": "Ably for VSCode",
   "description": "Manage Ably apps from VSCode",
   "preview": true,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "ably-labs",
   "icon": "media/ably-logo-stacked.png",
   "engines": {
@@ -96,6 +96,11 @@
           "type": "string",
           "default": null,
           "markdownDescription": "Your [Ably access token](https://ably.com/documentation/control-api#creating-access-token). You will need read and write capabilities for all features."
+        },
+        "ably.sendTelemetry": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enabling this option will help us improve the extension by sending identifiable telemetry (your Ably Account ID)."
         }
       }
     }
