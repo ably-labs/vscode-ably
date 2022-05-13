@@ -16,4 +16,4 @@ jobs:
       with:
         node-version: 16.x
     - run: npm install
-    - run: npm compile
+    - run: npm run compile
